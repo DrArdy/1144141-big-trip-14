@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Dmitry Kharitonov](https://up.htmlacademy.ru/ecmascript/14/user/1144141).
-* Наставник: `Неизвестно`.
+* Наставник: [Илья Локалин](https://htmlacademy.ru/profile/id1042585).
 
 ---
 
