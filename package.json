@@ -16,6 +16,9 @@
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
   },
+  "dependencies": {
+    "dayjs": "^1.10.4"
+  },
   "engines": {
     "node": "10"
   }
