@@ -1,9 +1,12 @@
 import dayjs from 'dayjs';
+import {HOURS_IN_DAY, MINUTES_IN_DAY, MINUTES_IN_HOUR} from '../constants.js';
+
 
 const createWaypoint = (waypointDataArray, index) => {
   const waypointData = waypointDataArray[index];
-  const hourDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'hour');
-  const minuteDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'minute') - hourDiff * 60;
+  const dayDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'day');
+  const hourDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'hour') - dayDiff * HOURS_IN_DAY;
+  const minuteDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'minute') - hourDiff * MINUTES_IN_HOUR - dayDiff * MINUTES_IN_DAY;
   const dateFromYearMonthDay = dayjs(waypointData.dateFrom).format('YYYY/MM/DD');
   const dateFromHourMinute = dayjs(waypointData.dateFrom).format('HH:mm');
   const dateToYearMonthDay = dayjs(waypointData.dateTo).format('YYYY/MM/DD');
@@ -46,7 +49,7 @@ const createWaypoint = (waypointDataArray, index) => {
         &mdash;
         <time class="event__end-time" datetime="${dateToYearMonthDay}T${dateToHourMinute}">${dateToHourMinute}</time>
       </p>
-      <p class="event__duration">${hourDiff}H ${minuteDiff}M</p>
+      <p class="event__duration">${dayDiff > 0 ? dayDiff + 'D ' : ''}${hourDiff > 0 ? hourDiff + 'H ' : ''}${minuteDiff}M</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${waypointData.basePrice}</span>
