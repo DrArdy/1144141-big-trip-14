@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
 import {HOURS_IN_DAY, MINUTES_IN_DAY, MINUTES_IN_HOUR} from '../constants.js';
+import {createElement} from '../utils.js';
 
-
-const createWaypoint = (waypointDataArray, index) => {
-  const waypointData = waypointDataArray[index];
+const createWaypointTemplate = (waypointData) => {
   const dayDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'day');
   const hourDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'hour') - dayDiff * HOURS_IN_DAY;
   const minuteDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'minute') - hourDiff * MINUTES_IN_HOUR - dayDiff * MINUTES_IN_DAY;
@@ -71,4 +70,28 @@ const createWaypoint = (waypointDataArray, index) => {
   </li>`;
 };
 
-export {createWaypoint};
+class WaypointView {
+  constructor(waypointData) {
+    this._waypoint = waypointData;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createWaypointTemplate(this._waypoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export {WaypointView};

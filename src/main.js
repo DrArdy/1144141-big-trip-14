@@ -1,36 +1,60 @@
-import {createTripInfo} from './view/trip-info.js';
-import {createTripPrice} from './view/trip-price.js';
-import {createMenu} from './view/menu.js';
-import {createFilters} from './view/filters.js';
-import {createSortingAndList} from './view/sorting-and-list.js';
-import {createWaypointForm} from './view/waypoint-form.js';
-import {createWaypoint} from './view/waypoint.js';
+import {TripInfoView} from './view/trip-info-view.js';
+import {TripPriceView} from './view/trip-price-view.js';
+import {MenuView} from './view/menu-view.js';
+import {FiltersView} from './view/filters-view.js';
+import {SortingView} from './view/sorting-view.js';
+import {ListView} from './view/list-view.js';
+import {WaypointFormView} from './view/waypoint-form-view.js';
+import {WaypointView} from './view/waypoint-view.js';
 import {generateWaypointDataArray} from './mock/waypoint-data.js';
 import {WAYPOINT_OBJECTS_COUNT} from './constants.js';
-import {render} from './utils.js';
+import {render, RenderPosition} from './utils.js';
 
 const tripInfoContainer = document.querySelector('.trip-main');
 const tripMenuContainer = document.querySelector('.trip-controls__navigation');
 const tripFiltersContainer = document.querySelector('.trip-controls__filters');
 const tripEventsContainer = document.querySelector('.trip-events');
 const waypointDataArray = generateWaypointDataArray();
+const tripInfoComponent = new TripInfoView(waypointDataArray);
+const sortingComponent = new SortingView();
+const listComponent = new ListView();
 
-render(tripInfoContainer, createTripInfo(waypointDataArray), 'afterbegin');
+const renderWaypoint = (waypointListElement, waypointData) => {
+  const waypointComponent = new WaypointView(waypointData);
+  const waypointFormComponent = new WaypointFormView(waypointData);
 
-const tripPriceContainer = document.querySelector('.trip-info');
+  const replaceFormToCard = () => {
+    waypointListElement.replaceChild(waypointComponent.getElement(), waypointFormComponent.getElement());
+  };
 
-render(tripPriceContainer, createTripPrice(waypointDataArray), 'beforeend');
+  const replaceCardToForm = () => {
+    waypointListElement.replaceChild(waypointFormComponent.getElement(), waypointComponent.getElement());
 
-render(tripMenuContainer, createMenu(), 'beforeend');
+    tripEventsContainer.querySelector('.event--edit').addEventListener('submit', (event) => {
+      event.preventDefault();
+      replaceFormToCard();
+    }, {once: true});
+  };
 
-render(tripFiltersContainer, createFilters(), 'beforeend');
+  render(waypointListElement, waypointComponent.getElement(), RenderPosition.BEFOREEND);
 
-render(tripEventsContainer, createSortingAndList(), 'beforeend');
+  waypointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceCardToForm();
+  });
+};
 
-const tripWaypointContainer = document.querySelector('.trip-events__list');
+render(tripInfoContainer, tripInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
 
-render(tripWaypointContainer, createWaypointForm(waypointDataArray[0]), 'beforeend');
+render(tripInfoComponent.getElement(), new TripPriceView(waypointDataArray).getElement(), RenderPosition.BEFOREEND);
 
-for (let i = 1; i < WAYPOINT_OBJECTS_COUNT; i++) {
-  render(tripWaypointContainer, createWaypoint(waypointDataArray, i), 'beforeend');
+render(tripMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
+
+render(tripFiltersContainer, new FiltersView().getElement(), RenderPosition.BEFOREEND);
+
+render(tripEventsContainer, sortingComponent.getElement(), RenderPosition.BEFOREEND);
+
+render(sortingComponent.getElement(), listComponent.getElement(), RenderPosition.BEFOREEND);
+
+for (let i = 0; i < WAYPOINT_OBJECTS_COUNT; i++) {
+  renderWaypoint(listComponent.getElement(), waypointDataArray[i]);
 }

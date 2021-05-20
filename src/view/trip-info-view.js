@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import {CITIES_LIMIT} from '../constants.js';
+import {createElement} from '../utils.js';
 
-const createTripInfo = (waypointDataArray) => {
+const createTripInfoTemplate = (waypointDataArray) => {
 
   if (waypointDataArray.length > 0) {
     const firstPointDate = dayjs(waypointDataArray[0].dateFrom).format('MMM D');
@@ -36,4 +37,28 @@ const createTripInfo = (waypointDataArray) => {
   }
 };
 
-export {createTripInfo};
+class TripInfoView {
+  constructor(waypointDataArray) {
+    this._waypointArray = waypointDataArray;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._waypointArray);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export {TripInfoView};
