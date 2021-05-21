@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {WAYPOINT_TYPES, BLANK_WAYPOINT} from '../constants.js';
-import {createElement} from '../utils.js';
+import {createElement, checkOffersExistance} from '../utils.js';
 
 const createWaypointFormTemplate = (waypointData) => {
   const {type, city, offers, info, dateFrom, dateTo, basePrice} = waypointData;
@@ -93,16 +93,16 @@ const createWaypointFormTemplate = (waypointData) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    ${city !== '' ? '<button class="event__reset-btn" type="reset">Delete</button>' : ' <button class="event__reset-btn" type="reset">Cancel</button>'}
+    ${city !== '' ? '<button class="event__reset-btn" type="reset">Delete</button> <button class="event__rollup-btn" type="button"> <span class="visually-hidden">Open event</span> </button>' : ' <button class="event__reset-btn" type="reset">Cancel</button>'}
   </header>
   <section class="event__details">
 
-    ${offers.offersInfo.length !== 0 ? `<section class="event__section  event__section--offers">
+    ${checkOffersExistance(offers) ? `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
       ${renderOffersList()}
     </div>
-    </section>` : ''}
+    </section>` : '' }
 
     ${city !== '' ? `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
