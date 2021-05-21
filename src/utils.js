@@ -24,13 +24,17 @@ const RenderPosition = {
 };
 
 const render = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
+  if (element !== null && container !== null) {
+    switch (place) {
+      case RenderPosition.AFTERBEGIN:
+        container.prepend(element);
+        break;
+      case RenderPosition.BEFOREEND:
+        container.append(element);
+        break;
+    }
+  } else {
+    return;
   }
 };
 
@@ -41,4 +45,13 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export {RenderPosition, render, createElement, getRandomInteger, checkFutureWaypoint, checkPastWaypoint};
+const checkOffersExistance = (offers) => {
+  if (offers !== null) {
+    return offers['offersInfo'].length !== 0;
+  }
+  else {
+    return false;
+  }
+};
+
+export {checkOffersExistance, RenderPosition, render, createElement, getRandomInteger, checkFutureWaypoint, checkPastWaypoint};

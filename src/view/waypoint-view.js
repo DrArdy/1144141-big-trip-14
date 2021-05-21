@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {HOURS_IN_DAY, MINUTES_IN_DAY, MINUTES_IN_HOUR} from '../constants.js';
-import {createElement} from '../utils.js';
+import {checkOffersExistance, createElement} from '../utils.js';
 
 const createWaypointTemplate = (waypointData) => {
   const dayDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'day');
@@ -14,7 +14,7 @@ const createWaypointTemplate = (waypointData) => {
   const renderOffersList = () => {
     const offersInfo = waypointData.offers['offersInfo'];
 
-    if (offersInfo.length !== 0) {
+    if (checkOffersExistance(waypointData.offers)) {
       const offersList = new Array();
 
       for (const offer of offersInfo) {
