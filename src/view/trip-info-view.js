@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {CITIES_LIMIT} from '../constants.js';
-import {createElement} from '../utils.js';
+import {AbstractView} from './abstract-view.js';
 
 const createTripInfoTemplate = (waypointDataArray) => {
 
@@ -37,27 +37,15 @@ const createTripInfoTemplate = (waypointDataArray) => {
   }
 };
 
-class TripInfoView {
+class TripInfoView extends AbstractView {
   constructor(waypointDataArray) {
-    this._waypointArray = waypointDataArray;
+    super();
 
-    this._element = null;
+    this._waypointArray = waypointDataArray;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._waypointArray);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

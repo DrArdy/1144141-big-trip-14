@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {HOURS_IN_DAY, MINUTES_IN_DAY, MINUTES_IN_HOUR} from '../constants.js';
-import {checkOffersExistance, createElement} from '../utils.js';
+import {checkOffersExistance} from '../utils/waypoint.js';
+import {AbstractView} from './abstract-view.js';
 
 const createWaypointTemplate = (waypointData) => {
   const dayDiff = dayjs(waypointData.dateTo).diff(dayjs(waypointData.dateFrom), 'day');
@@ -70,27 +71,29 @@ const createWaypointTemplate = (waypointData) => {
   </li>`;
 };
 
-class WaypointView {
+class WaypointView extends AbstractView {
   constructor(waypointData) {
+    super();
+
     this._waypoint = waypointData;
 
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
   }
 
   getTemplate() {
     return createWaypointTemplate(this._waypoint);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+  _editClickHandler(event) {
+    event.preventDefault();
 
-    return this._element;
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
   }
 }
 
