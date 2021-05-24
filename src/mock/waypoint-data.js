@@ -1,5 +1,5 @@
 import {MIN_BASE_PRICE, MAX_BASE_PRICE, WAYPOINT_OBJECTS_COUNT, MAX_START_HOUR, RANGE_OF_HOURS, RANGE_OF_DAYS, WAYPOINT_TYPES, WAYPOINT_DESTINATIONS, OFFERS_VARIANTS, OFFERS_PRICES, DESCRIPTION_VARIANTS, DESCRIPTION_COUNT, MAX_OFFERS_PACK_LENGTH, PHOTOS_COUNT} from '../constants.js';
-import {getRandomInteger} from '../utils.js';
+import {getRandomInteger} from '../utils/common.js';
 
 const getRandomValue = (dataArray) => {
   return dataArray[getRandomInteger(0, dataArray.length - 1)];

@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import {AbstractView} from './abstract-view.js';
 
 const createTripPriceTemplate = (waypointDataArray) => {
   if (waypointDataArray.length > 0) {
@@ -30,27 +30,15 @@ const createTripPriceTemplate = (waypointDataArray) => {
   }
 };
 
-class TripPriceView {
+class TripPriceView extends AbstractView {
   constructor(waypointDataArray) {
-    this._waypointArray = waypointDataArray;
+    super();
 
-    this._element = null;
+    this._waypointArray = waypointDataArray;
   }
 
   getTemplate() {
     return createTripPriceTemplate(this._waypointArray);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {WAYPOINT_TYPES, BLANK_WAYPOINT} from '../constants.js';
-import {createElement, checkOffersExistance} from '../utils.js';
+import {checkOffersExistance} from '../utils/waypoint.js';
+import {AbstractView} from './abstract-view.js';
 
 const createWaypointFormTemplate = (waypointData) => {
   const {type, city, offers, info, dateFrom, dateTo, basePrice} = waypointData;
@@ -119,26 +120,29 @@ const createWaypointFormTemplate = (waypointData) => {
   </form>`;
 };
 
-class WaypointFormView {
+class WaypointFormView extends AbstractView{
   constructor(waypointData = BLANK_WAYPOINT) {
+    super();
+
     this._waypointData = waypointData;
-    this._element = null;
+
+    this._formHandler = this._formHandler.bind(this);
   }
 
   getTemplate() {
     return createWaypointFormTemplate(this._waypointData);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formHandler(event) {
+    event.preventDefault();
+    this._callback.formActions();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormHandlers(callback) {
+    this._callback.formActions = callback;
+    this.getElement().addEventListener('submit', this._formHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formHandler);
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formHandler);
   }
 }
 

@@ -9,7 +9,7 @@ import {WaypointFormView} from './view/waypoint-form-view.js';
 import {WaypointView} from './view/waypoint-view.js';
 import {generateWaypointDataArray} from './mock/waypoint-data.js';
 import {WAYPOINT_OBJECTS_COUNT} from './constants.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 
 const tripInfoContainer = document.querySelector('.trip-main');
 const tripMenuContainer = document.querySelector('.trip-controls__navigation');
@@ -25,11 +25,11 @@ const renderWaypoint = (waypointListElement, waypointData) => {
   const waypointFormComponent = new WaypointFormView(waypointData);
 
   const replaceFormToCard = () => {
-    waypointListElement.replaceChild(waypointComponent.getElement(), waypointFormComponent.getElement());
+    replace(waypointComponent, waypointFormComponent);
   };
 
   const replaceCardToForm = () => {
-    waypointListElement.replaceChild(waypointFormComponent.getElement(), waypointComponent.getElement());
+    replace(waypointFormComponent, waypointComponent);
   };
 
   const closeOnEscKeydown = (event) => {
@@ -40,41 +40,30 @@ const renderWaypoint = (waypointListElement, waypointData) => {
     }
   };
 
-  waypointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  waypointComponent.setEditClickHandler(() => {
     replaceCardToForm();
     document.addEventListener('keydown', closeOnEscKeydown);
   });
 
-  waypointFormComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  waypointFormComponent.setFormHandlers(() => {
     replaceFormToCard();
     document.removeEventListener('keydown', closeOnEscKeydown);
   });
 
-  waypointFormComponent.getElement().querySelector('.event__reset-btn').addEventListener('click', () => {
-    replaceFormToCard();
-    document.removeEventListener('keydown', closeOnEscKeydown);
-  });
-
-  waypointFormComponent.getElement().addEventListener('submit', (event) => {
-    event.preventDefault();
-    replaceFormToCard();
-    document.removeEventListener('keydown', closeOnEscKeydown);
-  });
-
-  render(waypointListElement, waypointComponent.getElement(), RenderPosition.BEFOREEND);
+  render(waypointListElement, waypointComponent, RenderPosition.BEFOREEND);
 };
 
-render(tripInfoContainer, tripInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(tripInfoContainer, tripInfoComponent, RenderPosition.AFTERBEGIN);
 
-render(tripInfoComponent.getElement(), new TripPriceView(waypointDataArray).getElement(), RenderPosition.BEFOREEND);
+render(tripInfoComponent, new TripPriceView(waypointDataArray), RenderPosition.BEFOREEND);
 
-render(tripMenuContainer, new MenuView().getElement(), RenderPosition.BEFOREEND);
+render(tripMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 
-render(tripFiltersContainer, new FiltersView().getElement(), RenderPosition.BEFOREEND);
+render(tripFiltersContainer, new FiltersView(), RenderPosition.BEFOREEND);
 
-render(tripEventsContainer, new SortingView().getElement(), RenderPosition.BEFOREEND);
+render(tripEventsContainer, new SortingView(), RenderPosition.BEFOREEND);
 
-render(tripEventsContainer, emptyListComponent.getElement(), RenderPosition.BEFOREEND);
+render(tripEventsContainer, emptyListComponent, RenderPosition.BEFOREEND);
 
 for (let i = 0; i < WAYPOINT_OBJECTS_COUNT; i++) {
   if (i === 1) {
