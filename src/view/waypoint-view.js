@@ -78,6 +78,7 @@ class WaypointView extends AbstractView {
     this._waypoint = waypointData;
 
     this._editClickHandler = this._editClickHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -94,6 +95,18 @@ class WaypointView extends AbstractView {
     this._callback.editClick = callback;
 
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
+  }
+
+  _favouriteClickHandler(event) {
+    event.preventDefault();
+
+    this._callback.favouriteClick();
+  }
+
+  setFavouriteClickHandler(callback) {
+    this._callback.favouriteClick = callback;
+
+    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._favouriteClickHandler);
   }
 }
 
