@@ -5,15 +5,17 @@ import {FiltersView} from '../view/filters-view.js';
 import {SortingView} from '../view/sorting-view.js';
 import {ListView} from '../view/list-view.js';
 import {EmptyListView} from '../view/empty-list-view.js';
-import {WAYPOINT_OBJECTS_COUNT} from '../constants.js';
+import {WAYPOINT_OBJECTS_COUNT, SortingType} from '../constants.js';
 import {render, RenderPosition, replace} from '../utils/render.js';
 import {updateItem} from '../utils/common.js';
+import {sortWaypointByTime, sortWaypointByPrice} from '../utils/waypoint.js';
 import {WaypointPresenter} from './waypoint-presenter.js';
 
 class TripPresenter {
   constructor(tripContainer) {
     this._tripContainer = tripContainer;
     this._waypointPresenter = {};
+    this._currentSortingType = SortingType.DEFAULT;
 
     this._menuComponent = new MenuView();
     this._sortingComponent = new SortingView();
@@ -23,15 +25,28 @@ class TripPresenter {
 
     this._handleWaypointChange = this._handleWaypointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortingTypeChange = this._handleSortingTypeChange.bind(this);
   }
 
   init(tripWaypoints) {
     this._tripWaypoints = tripWaypoints.slice();
+    this._sourcedTripWaypoints = tripWaypoints.slice();
 
     this._infoComponent = new TripInfoView(this._tripWaypoints);
     this._priceComponent = new TripPriceView(this._tripWaypoints);
 
     this._renderTrip();
+  }
+
+  _handleSortingTypeChange(sortingType) {
+    if (this._currentSortingType === sortingType) {
+      return;
+    }
+
+    this._sortWaypoints(sortingType);
+
+    this._clearWaypointsList();
+    this._renderWaypointsList();
   }
 
   _handleModeChange() {
@@ -42,7 +57,23 @@ class TripPresenter {
 
   _handleWaypointChange(updatedWaypoint) {
     this._tripWaypoints = updateItem(this._tripWaypoints, updatedWaypoint);
+    this._sourcedTripWaypoints = updateItem(this._sourcedTripWaypoints, updatedWaypoint);
     this._waypointPresenter[updatedWaypoint.id].init(updatedWaypoint);
+  }
+
+  _sortWaypoints(sortingType) {
+    switch (sortingType) {
+      case SortingType.TIME:
+        this._tripWaypoints.sort(sortWaypointByTime);
+        break;
+      case SortingType.PRICE:
+        this._tripWaypoints.sort(sortWaypointByPrice);
+        break;
+      default:
+        this._tripWaypoints = this._sourcedTripWaypoints.slice();
+    }
+
+    this._currentSortingType = sortingType;
   }
 
   _renderInfo() {
@@ -69,6 +100,8 @@ class TripPresenter {
 
   _renderSorting() {
     render(this._tripContainer, this._sortingComponent, RenderPosition.BEFOREEND);
+
+    this._sortingComponent.setSortingTypeChangeHandler(this._handleSortingTypeChange);
   }
 
   _renderEmptyList() {
