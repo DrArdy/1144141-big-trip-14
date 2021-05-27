@@ -126,23 +126,43 @@ class WaypointFormView extends AbstractView{
 
     this._waypointData = waypointData;
 
-    this._formHandler = this._formHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formCloseHandler = this._formCloseHandler.bind(this);
+    this._formDeleteHandler = this._formDeleteHandler.bind(this);
   }
 
   getTemplate() {
     return createWaypointFormTemplate(this._waypointData);
   }
 
-  _formHandler(event) {
+  _formCloseHandler(event) {
     event.preventDefault();
-    this._callback.formActions();
+    this._callback.formClose();
   }
 
-  setFormHandlers(callback) {
-    this._callback.formActions = callback;
-    this.getElement().addEventListener('submit', this._formHandler);
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formHandler);
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formHandler);
+  _formSubmitHandler(event) {
+    event.preventDefault();
+    this._callback.formSubmit(this._waypointData);
+  }
+
+  _formDeleteHandler(event) {
+    event.preventDefault();
+    this._callback.formDelete();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener('submit', this._formSubmitHandler);
+  }
+
+  setFormDeleteHandler(callback) {
+    this._callback.formDelete = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formDeleteHandler);
+  }
+
+  setFormCloseHandler(callback) {
+    this._callback.formClose = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formCloseHandler);
   }
 }
 

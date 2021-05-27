@@ -1,6 +1,8 @@
 import {MIN_BASE_PRICE, MAX_BASE_PRICE, WAYPOINT_OBJECTS_COUNT, MAX_START_HOUR, RANGE_OF_HOURS, RANGE_OF_DAYS, WAYPOINT_TYPES, WAYPOINT_DESTINATIONS, OFFERS_VARIANTS, OFFERS_PRICES, DESCRIPTION_VARIANTS, DESCRIPTION_COUNT, MAX_OFFERS_PACK_LENGTH, PHOTOS_COUNT} from '../constants.js';
 import {getRandomInteger} from '../utils/common.js';
 
+const commentIds = [];
+
 const getRandomValue = (dataArray) => {
   return dataArray[getRandomInteger(0, dataArray.length - 1)];
 };
@@ -86,6 +88,16 @@ const generateDatesMap = () => {
   return datesMap;
 };
 
+const generateWaypointId = () => {
+  const [min, max] = [100, 999];
+  let commentId = getRandomInteger(min, max);
+  while(commentIds.includes(commentId)) {
+    commentId = getRandomInteger(min, max);
+  }
+  commentIds.push(commentId);
+  return commentId;
+};
+
 const generateWaypointData = (generatedDateFrom, generatedDateTo) => {
   const offersMap = generateOffersMap();
   const currentType = getRandomValue(WAYPOINT_TYPES);
@@ -105,6 +117,7 @@ const generateWaypointData = (generatedDateFrom, generatedDateTo) => {
     dateTo: generatedDateTo,
     isFavourite: Boolean(getRandomInteger(0, 1)),
     basePrice: getRandomInteger(MIN_BASE_PRICE, MAX_BASE_PRICE),
+    id: generateWaypointId(),
   };
 };
 
