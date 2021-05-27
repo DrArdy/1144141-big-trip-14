@@ -20,4 +20,12 @@ const checkOffersExistance = (offers) => {
   }
 };
 
-export {checkOffersExistance, checkFutureWaypoint, checkPastWaypoint};
+const sortWaypointByTime = (waypointA, waypointB) => {
+  return dayjs(waypointB.dateTo).diff(dayjs(waypointB.dateFrom)) - dayjs(waypointA.dateTo).diff(dayjs(waypointA.dateFrom));
+};
+
+const sortWaypointByPrice = (waypointA, waypointB) => {
+  return waypointB.basePrice - waypointA.basePrice ;
+};
+
+export {checkOffersExistance, checkFutureWaypoint, checkPastWaypoint, sortWaypointByPrice, sortWaypointByTime};

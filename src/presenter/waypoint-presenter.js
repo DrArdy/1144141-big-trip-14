@@ -80,9 +80,9 @@ class WaypointPresenter {
     this._mode = Mode.DEFAULT;
   }
 
-  _handleEscKeydown(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
+  _handleEscKeydown(event) {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      event.preventDefault();
       this._replaceFormToWaypoint();
       document.removeEventListener('keydown', this._handleEscKeydown);
     }
