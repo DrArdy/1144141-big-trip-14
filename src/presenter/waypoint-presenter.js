@@ -17,12 +17,12 @@ class WaypointPresenter {
     this._waypointFormComponent = null;
     this._mode = Mode.DEFAULT;
 
-    this._handleEditClick = this._handleEditClick.bind(this);
-    this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleFormDelete = this._handleFormDelete.bind(this);
-    this._handleFormClose = this._handleFormClose.bind(this);
-    this._handleEscKeydown = this._handleEscKeydown.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteHandler = this._formDeleteHandler.bind(this);
+    this._formCloseHandler = this._formCloseHandler.bind(this);
+    this._escKeydownHandler = this._escKeydownHandler.bind(this);
   }
 
   init(waypoint) {
@@ -34,11 +34,11 @@ class WaypointPresenter {
     this._waypointComponent = new WaypointView(this._waypoint);
     this._waypointFormComponent = new WaypointFormView(this._waypoint);
 
-    this._waypointComponent.setEditClickHandler(this._handleEditClick);
-    this._waypointComponent.setFavouriteClickHandler(this._handleFavouriteClick);
-    this._waypointFormComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._waypointFormComponent.setFormDeleteHandler(this._handleFormDelete);
-    this._waypointFormComponent.setFormCloseHandler(this._handleFormClose);
+    this._waypointComponent.setEditClickHandler(this._editClickHandler);
+    this._waypointComponent.setFavouriteClickHandler(this._favouriteClickHandler);
+    this._waypointFormComponent.setFormSubmitHandler(this._formSubmitHandler);
+    this._waypointFormComponent.setFormDeleteHandler(this._formDeleteHandler);
+    this._waypointFormComponent.setFormCloseHandler(this._formCloseHandler);
 
     if (prevWaypointComponent === null || prevWaypointFormComponent === null) {
       render(this._listComponent, this._waypointComponent, RenderPosition.BEFOREEND);
@@ -64,7 +64,7 @@ class WaypointPresenter {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
-      document.removeEventListener('keydown', this._handleEscKeydown);
+      document.removeEventListener('keydown', this._escKeydownHandler);
       this._replaceFormToWaypoint();
     }
   }
@@ -80,36 +80,37 @@ class WaypointPresenter {
     this._mode = Mode.DEFAULT;
   }
 
-  _handleEscKeydown(event) {
-    if (event.key === 'Escape' || event.key === 'Esc') {
-      event.preventDefault();
+  _escKeydownHandler(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._waypointFormComponent.reset(this._waypoint);
       this._replaceFormToWaypoint();
-      document.removeEventListener('keydown', this._handleEscKeydown);
+      document.removeEventListener('keydown', this._escKeydownHandler);
     }
   }
 
-  _handleEditClick() {
+  _editClickHandler() {
     this._replaceWaypointToForm();
-    document.addEventListener('keydown', this._handleEscKeydown);
+    document.addEventListener('keydown', this._escKeydownHandler);
   }
 
-  _handleFormSubmit(waypoint) {
+  _formSubmitHandler(waypoint) {
     this._changeData(waypoint);
     this._replaceFormToWaypoint();
-    document.removeEventListener('keydown', this._handleEscKeydown);
+    document.removeEventListener('keydown', this._escKeydownHandler);
   }
 
-  _handleFormDelete() {
+  _formDeleteHandler() {
     this._replaceFormToWaypoint();
-    document.removeEventListener('keydown', this._handleEscKeydown);
+    document.removeEventListener('keydown', this._escKeydownHandler);
   }
 
-  _handleFormClose() {
+  _formCloseHandler() {
     this._replaceFormToWaypoint();
-    document.removeEventListener('keydown', this._handleEscKeydown);
+    document.removeEventListener('keydown', this._escKeydownHandler);
   }
 
-  _handleFavouriteClick() {
+  _favouriteClickHandler() {
     const favouriteButton = this._waypointComponent.getElement().querySelector('.event__favorite-btn');
 
     favouriteButton.classList.toggle('event__favorite-btn--active');

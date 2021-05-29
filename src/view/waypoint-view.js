@@ -85,8 +85,8 @@ class WaypointView extends AbstractView {
     return createWaypointTemplate(this._waypoint);
   }
 
-  _editClickHandler(event) {
-    event.preventDefault();
+  _editClickHandler(evt) {
+    evt.preventDefault();
 
     this._callback.editClick();
   }
@@ -97,8 +97,8 @@ class WaypointView extends AbstractView {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
   }
 
-  _favouriteClickHandler(event) {
-    event.preventDefault();
+  _favouriteClickHandler(evt) {
+    evt.preventDefault();
 
     this._callback.favouriteClick();
   }

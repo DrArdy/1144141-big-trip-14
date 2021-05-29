@@ -23,9 +23,9 @@ class TripPresenter {
     this._listComponent = new ListView();
     this._emptyListComponent = new EmptyListView();
 
-    this._handleWaypointChange = this._handleWaypointChange.bind(this);
-    this._handleModeChange = this._handleModeChange.bind(this);
-    this._handleSortingTypeChange = this._handleSortingTypeChange.bind(this);
+    this._waypointChangeHandler = this._waypointChangeHandler.bind(this);
+    this._modeChangeHandler = this._modeChangeHandler.bind(this);
+    this._sortingTypeChangeHandler = this._sortingTypeChangeHandler.bind(this);
   }
 
   init(tripWaypoints) {
@@ -38,7 +38,7 @@ class TripPresenter {
     this._renderTrip();
   }
 
-  _handleSortingTypeChange(sortingType) {
+  _sortingTypeChangeHandler(sortingType) {
     if (this._currentSortingType === sortingType) {
       return;
     }
@@ -49,13 +49,13 @@ class TripPresenter {
     this._renderWaypointsList();
   }
 
-  _handleModeChange() {
+  _modeChangeHandler() {
     Object
       .values(this._waypointPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handleWaypointChange(updatedWaypoint) {
+  _waypointChangeHandler(updatedWaypoint) {
     this._tripWaypoints = updateItem(this._tripWaypoints, updatedWaypoint);
     this._sourcedTripWaypoints = updateItem(this._sourcedTripWaypoints, updatedWaypoint);
     this._waypointPresenter[updatedWaypoint.id].init(updatedWaypoint);
@@ -101,7 +101,7 @@ class TripPresenter {
   _renderSorting() {
     render(this._tripContainer, this._sortingComponent, RenderPosition.BEFOREEND);
 
-    this._sortingComponent.setSortingTypeChangeHandler(this._handleSortingTypeChange);
+    this._sortingComponent.setSortingTypeChangeHandler(this._sortingTypeChangeHandler);
   }
 
   _renderEmptyList() {
@@ -120,7 +120,7 @@ class TripPresenter {
   }
 
   _renderWaypoint(waypoint) {
-    const waypointPresenter = new WaypointPresenter(this._listComponent, this._handleWaypointChange, this._handleModeChange);
+    const waypointPresenter = new WaypointPresenter(this._listComponent, this._waypointChangeHandler, this._modeChangeHandler);
 
     waypointPresenter.init(waypoint);
     this._waypointPresenter[waypoint.id] = waypointPresenter;

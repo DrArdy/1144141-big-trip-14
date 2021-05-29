@@ -1,33 +1,45 @@
 import dayjs from 'dayjs';
-import {WAYPOINT_TYPES, BLANK_WAYPOINT} from '../constants.js';
+import {WAYPOINT_TYPES, BLANK_WAYPOINT, WAYPOINT_DESTINATIONS} from '../constants.js';
 import {checkOffersExistance} from '../utils/waypoint.js';
-import {AbstractView} from './abstract-view.js';
+import {SmartView} from './smart-view.js';
+import {offersMap} from '../mock/waypoint-data.js';
 
 const createWaypointFormTemplate = (waypointData) => {
   const {type, city, offers, info, dateFrom, dateTo, basePrice} = waypointData;
+
+  const renderCities = (currentCity) => {
+
+    const cities = new Array();
+
+    for (const cityVariant of WAYPOINT_DESTINATIONS) {
+      cities.push(`<option value="${cityVariant}" ${currentCity === cityVariant ? 'selected' : ''}></option>`);
+    }
+
+    return cities.join('');
+  };
 
   const renderEventTypes = (currentType) => {
 
     const eventTypes = new Array();
 
-    for (const type of WAYPOINT_TYPES) {
+    for (const typeVariant of WAYPOINT_TYPES) {
       eventTypes.push(`<div class="event__type-item">
-      <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${currentType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+      <input id="event-type-${typeVariant.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeVariant.toLowerCase()}" ${currentType === typeVariant ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${typeVariant.toLowerCase()}" for="event-type-${typeVariant.toLowerCase()}-1">${typeVariant}</label>
       </div>`);
     }
 
     return eventTypes.join('');
   };
 
-  const renderOffersList = () => {
+  const renderOffersList = (currentType) => {
     const offersList = new Array();
-
-    for (const offer of offers['offersInfo']) {
+    const currentOffers = offersMap.get(currentType);
+    for (const offer of currentOffers) {
       const offerIdentificator = offer.title.split(' ').pop().toLowerCase();
 
       offersList.push(`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerIdentificator}-1" type="checkbox" name="event-offer-${offerIdentificator}" ${offers['offersInfo'].length !== 0 && type !== '' && offer.checked ? 'checked' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerIdentificator}-1" type="checkbox" name="event-offer-${offerIdentificator}"}>
       <label class="event__offer-label" for="event-offer-${offerIdentificator}-1">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -71,9 +83,7 @@ const createWaypointFormTemplate = (waypointData) => {
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city !== '' ? city : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
+        ${renderCities(city)}
       </datalist>
     </div>
 
@@ -101,7 +111,7 @@ const createWaypointFormTemplate = (waypointData) => {
     ${checkOffersExistance(offers) ? `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${renderOffersList()}
+      ${renderOffersList(type)}
     </div>
     </section>` : '' }
 
@@ -120,33 +130,61 @@ const createWaypointFormTemplate = (waypointData) => {
   </form>`;
 };
 
-class WaypointFormView extends AbstractView{
-  constructor(waypointData = BLANK_WAYPOINT) {
+class WaypointFormView extends SmartView{
+  constructor(waypoint = BLANK_WAYPOINT) {
     super();
 
-    this._waypointData = waypointData;
+    this._waypointData = WaypointFormView.parseWaypointToWaypointData(waypoint);
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formCloseHandler = this._formCloseHandler.bind(this);
     this._formDeleteHandler = this._formDeleteHandler.bind(this);
+    this._cityToggleHandler = this._cityToggleHandler.bind(this);
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._offersToggleHandler = this._offersToggleHandler.bind(this);
+
+  }
+
+  reset(waypoint) {
+    this.updateData(
+      WaypointFormView.parseWaypointToWaypointData(waypoint),
+    );
   }
 
   getTemplate() {
     return createWaypointFormTemplate(this._waypointData);
   }
 
-  _formCloseHandler(event) {
-    event.preventDefault();
+  _cityToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+    });
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+    });
+  }
+
+  _offersToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+    });
+  }
+
+  _formCloseHandler(evt) {
+    evt.preventDefault();
     this._callback.formClose();
   }
 
-  _formSubmitHandler(event) {
-    event.preventDefault();
-    this._callback.formSubmit(this._waypointData);
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(WaypointFormView.parseWaypointDataToWaypoint(this._waypointData));
   }
 
-  _formDeleteHandler(event) {
-    event.preventDefault();
+  _formDeleteHandler(evt) {
+    evt.preventDefault();
     this._callback.formDelete();
   }
 
@@ -163,6 +201,21 @@ class WaypointFormView extends AbstractView{
   setFormCloseHandler(callback) {
     this._callback.formClose = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formCloseHandler);
+  }
+
+  static parseWaypointToWaypointData(waypoint) {
+    return Object.assign(
+      {},
+      waypoint,
+      {
+      },
+    );
+  }
+
+  static parseWaypointDataToWaypoint(waypointData) {
+    waypointData = Object.assign({}, waypointData);
+
+    return waypointData;
   }
 }
 

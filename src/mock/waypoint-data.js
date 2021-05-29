@@ -7,7 +7,7 @@ const getRandomValue = (dataArray) => {
   return dataArray[getRandomInteger(0, dataArray.length - 1)];
 };
 
-const getOffersPack = () => {
+const generateOffersPack = () => {
   const offersPack = new Array();
   const offersPackLength = getRandomInteger(0, MAX_OFFERS_PACK_LENGTH);
 
@@ -39,7 +39,7 @@ const generateOffersMap = () => {
   const offersAndTypes = new Map();
 
   for (const currentType of WAYPOINT_TYPES) {
-    offersAndTypes.set(currentType, getOffersPack());
+    offersAndTypes.set(currentType, generateOffersPack());
   }
 
   return offersAndTypes;
@@ -98,8 +98,9 @@ const generateWaypointId = () => {
   return commentId;
 };
 
+const offersMap = generateOffersMap();
+
 const generateWaypointData = (generatedDateFrom, generatedDateTo) => {
-  const offersMap = generateOffersMap();
   const currentType = getRandomValue(WAYPOINT_TYPES);
 
   return {
@@ -134,4 +135,4 @@ const generateWaypointDataArray = () => {
   return waypointArray;
 };
 
-export {generateWaypointDataArray, generateDatesMap};
+export {generateWaypointDataArray, generateDatesMap, offersMap};

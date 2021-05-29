@@ -41,12 +41,12 @@ class SortingView extends AbstractView {
     return createSortingTemplate();
   }
 
-  _sortingTypeChangeHandler(event) {
-    if (event.target.tagName !== 'LABEL') {
+  _sortingTypeChangeHandler(evt) {
+    if (evt.target.tagName !== 'LABEL') {
       return;
     }
-    event.preventDefault();
-    this._callback.sortingTypeChange(event.target.dataset.sortingType);
+    evt.preventDefault();
+    this._callback.sortingTypeChange(evt.target.dataset.sortingType);
   }
 
   setSortingTypeChangeHandler(callback) {
