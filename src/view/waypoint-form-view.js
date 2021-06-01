@@ -7,12 +7,12 @@ import {offersMap} from '../mock/waypoint-data.js';
 const createWaypointFormTemplate = (waypointData) => {
   const {type, city, offers, info, dateFrom, dateTo, basePrice} = waypointData;
 
-  const renderCities = (currentCity) => {
+  const renderCities = () => {
 
     const cities = new Array();
 
     for (const cityVariant of WAYPOINT_DESTINATIONS) {
-      cities.push(`<option value="${cityVariant}" ${currentCity === cityVariant ? 'selected' : ''}></option>`);
+      cities.push(`<option value="${cityVariant}"}></option>`);
     }
 
     return cities.join('');
@@ -24,8 +24,8 @@ const createWaypointFormTemplate = (waypointData) => {
 
     for (const typeVariant of WAYPOINT_TYPES) {
       eventTypes.push(`<div class="event__type-item">
-      <input id="event-type-${typeVariant.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeVariant.toLowerCase()}" ${currentType === typeVariant ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${typeVariant.toLowerCase()}" for="event-type-${typeVariant.toLowerCase()}-1">${typeVariant}</label>
+      <input id="event-type-${typeVariant}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeVariant}" ${currentType === typeVariant ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${typeVariant}" for="event-type-${typeVariant}-1">${typeVariant[0].toUpperCase() + typeVariant.slice(1, typeVariant.length + 1)}</label>
       </div>`);
     }
 
@@ -83,7 +83,7 @@ const createWaypointFormTemplate = (waypointData) => {
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city !== '' ? city : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
-        ${renderCities(city)}
+        ${renderCities()}
       </datalist>
     </div>
 
@@ -139,10 +139,11 @@ class WaypointFormView extends SmartView{
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formCloseHandler = this._formCloseHandler.bind(this);
     this._formDeleteHandler = this._formDeleteHandler.bind(this);
-    this._cityToggleHandler = this._cityToggleHandler.bind(this);
-    this._typeToggleHandler = this._typeToggleHandler.bind(this);
-    this._offersToggleHandler = this._offersToggleHandler.bind(this);
+    this._cityInputHandler = this._cityInputHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._cityClearHandler = this._cityClearHandler.bind(this);
 
+    this._setInnerHandlers();
   }
 
   reset(waypoint) {
@@ -155,21 +156,38 @@ class WaypointFormView extends SmartView{
     return createWaypointFormTemplate(this._waypointData);
   }
 
-  _cityToggleHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-    });
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
-  _typeToggleHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-    });
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-group')
+      .addEventListener('change', this._typeChangeHandler);
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this._cityInputHandler);
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('focus', this._cityClearHandler);
   }
 
-  _offersToggleHandler(evt) {
-    evt.preventDefault();
+  _cityInputHandler(evt) {
     this.updateData({
+      city: evt.target.value,
+    }, true); //update description and photos from server
+  }
+
+  _cityClearHandler(evt) {
+    evt.preventDefault();
+    evt.target.value = '';
+  }
+
+  _typeChangeHandler(evt) {
+    console.log('type changing');
+    this.updateData({
+      type: evt.target.value,
     });
   }
 
@@ -204,6 +222,7 @@ class WaypointFormView extends SmartView{
   }
 
   static parseWaypointToWaypointData(waypoint) {
+    console.log('parse w to d');
     return Object.assign(
       {},
       waypoint,
@@ -213,6 +232,7 @@ class WaypointFormView extends SmartView{
   }
 
   static parseWaypointDataToWaypoint(waypointData) {
+    console.log('parse d to w');
     waypointData = Object.assign({}, waypointData);
 
     return waypointData;

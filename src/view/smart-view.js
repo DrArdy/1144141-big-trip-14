@@ -1,9 +1,9 @@
 import {AbstractView} from './abstract-view';
 
-export default class SmartView extends AbstractView {
+class SmartView extends AbstractView {
   constructor() {
     super();
-    this._data = {};
+    this._waypointData = {};
   }
 
   updateData(update, justDataUpdating) {
@@ -11,9 +11,9 @@ export default class SmartView extends AbstractView {
       return;
     }
 
-    this._data = Object.assign(
+    this._waypointData = Object.assign(
       {},
-      this._data,
+      this._waypointData,
       update,
     );
 

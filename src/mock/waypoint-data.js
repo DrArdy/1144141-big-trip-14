@@ -131,7 +131,7 @@ const generateWaypointDataArray = () => {
   for (let i = 0; i < WAYPOINT_OBJECTS_COUNT; i++) {
     waypointArray.push(generateWaypointData(datesFrom[i], datesTo[i]));
   }
-
+  console.log(waypointArray);
   return waypointArray;
 };
 

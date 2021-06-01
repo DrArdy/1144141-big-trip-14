@@ -1,4 +1,4 @@
-const WAYPOINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'transport', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const WAYPOINT_DESTINATIONS = ['Amsterdam', 'Chamonix', 'Geneva', 'Milano', 'Sidney'];
 const OFFERS_VARIANTS = ['Offer #1', 'Offer #2', 'Offer #3', 'Offer #4', 'Offer #5'];
 const OFFERS_PRICES = [50, 100, 150, 200, 250];
