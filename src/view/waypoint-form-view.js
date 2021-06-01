@@ -1,8 +1,13 @@
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {WAYPOINT_TYPES, BLANK_WAYPOINT, WAYPOINT_DESTINATIONS} from '../constants.js';
 import {checkOffersExistance} from '../utils/waypoint.js';
 import {SmartView} from './smart-view.js';
 import {offersMap} from '../mock/waypoint-data.js';
+
+dayjs.extend(customParseFormat);
 
 const createWaypointFormTemplate = (waypointData) => {
   const {type, city, offers, info, dateFrom, dateTo, basePrice} = waypointData;
@@ -89,10 +94,10 @@ const createWaypointFormTemplate = (waypointData) => {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom !== '' ? dayjs(dateFrom).format('YY/MM/DD HH:mm') : `${dayjs().format('YY/MM/DD')} 00:00`}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom !== '' ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : `${dayjs().format('DD/MM/YY')} 00:00`}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo !== '' ? dayjs(dateTo).format('YY/MM/DD HH:mm') : `${dayjs().format('YY/MM/DD')} 00:00`}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo !== '' ? dayjs(dateTo).format('DD/MM/YY HH:mm') : `${dayjs().format('DD/MM/YY')} 00:00`}">
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -143,6 +148,8 @@ class WaypointFormView extends SmartView{
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._cityClearHandler = this._cityClearHandler.bind(this);
     this._priceInputHandler =  this._priceInputHandler.bind(this);
+    this._dateFromInputHandler = this._dateFromInputHandler.bind(this);
+    this._dateToInputHandler = this._dateToInputHandler.bind(this);
     /* this._offersCheckHandler = this._offersCheckHandler.bind(this); */
 
     this._setInnerHandlers();
@@ -178,6 +185,12 @@ class WaypointFormView extends SmartView{
     this.getElement()
       .querySelector('.event__input--price')
       .addEventListener('input', this._priceInputHandler);
+    this.getElement()
+      .querySelector('#event-start-time-1')
+      .addEventListener('focus', this._dateFromInputHandler);
+    this.getElement()
+      .querySelector('#event-end-time-1')
+      .addEventListener('focus', this._dateToInputHandler);
     /* if (checkOffersExistance(this._waypointData.offers)) {
       this.getElement()
         .querySelector('.event__available-offers')
@@ -196,6 +209,38 @@ class WaypointFormView extends SmartView{
       ),
     });
   } */
+
+  _dateFromInputHandler(evt) {
+    evt.preventDefault();
+
+    flatpickr('#event-start-time-1', {
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: 'd/m/y H:i',
+      maxDate: this.getElement().querySelector('#event-end-time-1').value,
+      onValueUpdate: () => {
+        this.updateData({
+          dateFrom: dayjs(evt.target.value, 'DD/MM/YY HH:mm').toISOString(),
+        }, true);
+      },
+    });
+  }
+
+  _dateToInputHandler(evt) {
+    evt.preventDefault();
+
+    flatpickr('#event-end-time-1', {
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: 'd/m/y H:i',
+      minDate: this.getElement().querySelector('#event-start-time-1').value,
+      onValueUpdate: () => {
+        this.updateData({
+          dateTo: dayjs(evt.target.value, 'DD/MM/YY HH:mm').toISOString(),
+        }, true);
+      },
+    });
+  }
 
   _priceInputHandler(evt) {
     this.updateData({

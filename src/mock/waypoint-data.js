@@ -135,4 +135,4 @@ const generateWaypointDataArray = () => {
   return waypointArray;
 };
 
-export {generateWaypointDataArray, generateDatesMap, offersMap};
+export {generateWaypointDataArray, offersMap};
