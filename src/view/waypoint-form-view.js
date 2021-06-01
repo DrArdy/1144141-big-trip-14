@@ -36,11 +36,11 @@ const createWaypointFormTemplate = (waypointData) => {
     const offersList = new Array();
     const currentOffers = offersMap.get(currentType);
     for (const offer of currentOffers) {
-      const offerIdentificator = offer.title.split(' ').pop().toLowerCase();
+      const offerIdentificator = offer.title.split(' ').join('-');
 
       offersList.push(`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerIdentificator}-1" type="checkbox" name="event-offer-${offerIdentificator}"}>
-      <label class="event__offer-label" for="event-offer-${offerIdentificator}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="${offerIdentificator}" type="checkbox" name="${offerIdentificator}" ${offer.checked ? 'checked' : ''}>
+      <label class="event__offer-label" for="${offerIdentificator}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -142,6 +142,8 @@ class WaypointFormView extends SmartView{
     this._cityInputHandler = this._cityInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._cityClearHandler = this._cityClearHandler.bind(this);
+    this._priceInputHandler =  this._priceInputHandler.bind(this);
+    /* this._offersCheckHandler = this._offersCheckHandler.bind(this); */
 
     this._setInnerHandlers();
   }
@@ -159,6 +161,8 @@ class WaypointFormView extends SmartView{
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormDeleteHandler(this._callback.formDelete);
+    this.setFormCloseHandler(this._callback.formClose);
   }
 
   _setInnerHandlers() {
@@ -171,6 +175,32 @@ class WaypointFormView extends SmartView{
     this.getElement()
       .querySelector('.event__input--destination')
       .addEventListener('focus', this._cityClearHandler);
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('input', this._priceInputHandler);
+    /* if (checkOffersExistance(this._waypointData.offers)) {
+      this.getElement()
+        .querySelector('.event__available-offers')
+        .addEventListener('change', this._offersCheckHandler);
+    } */
+  }
+
+  /*  _offersCheckHandler(evt) {
+    this.updateData({
+      offers: Object.assign(
+        {},
+        this._waypointData.offers,
+        {
+          offersInfo: ,
+        },
+      ),
+    });
+  } */
+
+  _priceInputHandler(evt) {
+    this.updateData({
+      basePrice: evt.target.value,
+    }, true);
   }
 
   _cityInputHandler(evt) {
@@ -185,7 +215,6 @@ class WaypointFormView extends SmartView{
   }
 
   _typeChangeHandler(evt) {
-    console.log('type changing');
     this.updateData({
       type: evt.target.value,
     });
@@ -222,7 +251,6 @@ class WaypointFormView extends SmartView{
   }
 
   static parseWaypointToWaypointData(waypoint) {
-    console.log('parse w to d');
     return Object.assign(
       {},
       waypoint,
@@ -232,7 +260,6 @@ class WaypointFormView extends SmartView{
   }
 
   static parseWaypointDataToWaypoint(waypointData) {
-    console.log('parse d to w');
     waypointData = Object.assign({}, waypointData);
 
     return waypointData;
