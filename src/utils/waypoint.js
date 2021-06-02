@@ -4,11 +4,11 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 dayjs.extend(isSameOrAfter);
 
 const checkFutureWaypoint = (dateFrom) => {
-  dayjs(dateFrom).isSameOrAfter(dayjs()) ? true : false;
+  return dayjs(dateFrom).isSameOrAfter(dayjs());
 };
 
 const checkPastWaypoint = (dateTo) => {
-  dayjs(dateTo).isBefore(dayjs()) ? true : false;
+  return dayjs(dateTo).isBefore(dayjs());
 };
 
 const checkOffersExistance = (offers) => {

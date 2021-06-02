@@ -5,4 +5,16 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export {getRandomInteger};
+const setInputError = (inputField, message) => {
+  inputField.setCustomValidity(message);
+  inputField.style.borderColor = 'red';
+  inputField.reportValidity();
+  return;
+};
+
+const resetInputError = (inputField) => {
+  inputField.setCustomValidity('');
+  inputField.style.borderColor = '';
+};
+
+export {getRandomInteger, setInputError, resetInputError};

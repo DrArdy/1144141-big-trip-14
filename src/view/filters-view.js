@@ -2,24 +2,25 @@ import {AbstractView} from './abstract-view.js';
 import {FilterType} from '../constants.js';
 
 const createFiltersTemplate = (currentFilterType) => {
-  const createFilterItemTemplate = (filter, currentFilterType) => {
-    const {type, name} = filter;
-    return `<div class="trip-filters__filter">
-    <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" ${type === currentFilterType ? 'checked' : ''}>
-    <label class="trip-filters__filter-label" for="filter-${type}">${name}</label>
-    </div>`;
-  };
-  console.log();
-  const filterItemsTemplate = () => {
-    return FilterType.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('');
-  };
   return `<form class="trip-filters" action="#" method="get">
-    ${filterItemsTemplate()}
+    <div class="trip-filters__filter">
+      <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" ${FilterType.EVERYTHING === currentFilterType ? 'checked' : ''}>
+      <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
+    </div>
+
+    <div class="trip-filters__filter">
+      <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future" ${FilterType.FUTURE === currentFilterType ? 'checked' : ''}>
+      <label class="trip-filters__filter-label" for="filter-future">Future</label>
+    </div>
+
+    <div class="trip-filters__filter">
+      <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" ${FilterType.PAST === currentFilterType ? 'checked' : ''}>
+      <label class="trip-filters__filter-label" for="filter-past">Past</label>
+    </div>
+
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`;
 };
-
-${type === currentFilterType ? 'checked' : ''
 
 class FiltersView extends AbstractView {
   constructor(currentFilterType) {

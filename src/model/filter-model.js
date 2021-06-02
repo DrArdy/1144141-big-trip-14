@@ -15,6 +15,10 @@ class FilterModel extends Observer {
   getFilter() {
     return this._activeFilter;
   }
+
+  resetFilter() {
+    this._activeFilter = FilterType.EVERYTHING;
+  }
 }
 
 export {FilterModel};

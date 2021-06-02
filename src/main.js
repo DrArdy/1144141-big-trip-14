@@ -15,3 +15,8 @@ const filterPresenter = new FilterPresenter(tripFiltersContainer, filterModel, w
 
 filterPresenter.init();
 tripPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createWaypoint();
+});

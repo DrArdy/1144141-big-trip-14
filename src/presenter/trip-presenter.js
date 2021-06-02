@@ -5,11 +5,12 @@ import {FiltersView} from '../view/filters-view.js';
 import {SortingView} from '../view/sorting-view.js';
 import {ListView} from '../view/list-view.js';
 import {EmptyListView} from '../view/empty-list-view.js';
-import {WAYPOINT_OBJECTS_COUNT, SortingType, UpdateType, UserAction} from '../constants.js';
+import {FilterType, SortingType, UpdateType, UserAction} from '../constants.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {sortWaypointByTime, sortWaypointByPrice} from '../utils/waypoint.js';
 import {filter} from '../utils/filter.js';
 import {WaypointPresenter} from './waypoint-presenter.js';
+import {WaypointNewPresenter} from './waypoint-new-presenter.js';
 
 class TripPresenter {
   constructor(tripContainer, waypointsModel, filterModel) {
@@ -33,12 +34,20 @@ class TripPresenter {
 
     this._waypointsModel.addObserver(this._modelEventHandler);
     this._filterModel.addObserver(this._modelEventHandler);
+
+    this._waypointNewPresenter = new WaypointNewPresenter(this._listComponent, this._viewActionHandler);
   }
 
   init() {
     this._renderMenu();
 
     this._renderTrip();
+  }
+
+  createWaypoint() {
+    this._currentSortType = SortingType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._waypointNewPresenter.init();
   }
 
   _sortingTypeChangeHandler(sortingType) {
@@ -48,27 +57,41 @@ class TripPresenter {
 
     this._currentSortingType = sortingType;
 
-    this._clearTrip({resetRenderedWaypointCount: true});
+    this._clearTrip();
     this._renderTrip();
   }
 
   _modeChangeHandler() {
+    this._waypointNewPresenter.destroy();
     Object
       .values(this._waypointPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
   _getWaypoints() {
-    const filterType = this._filterModel.getFilter();
-    const waypoints = this._waypointsModel.getWaypoints();
-    const filteredWaypoints = filter[filterType](waypoints);
+    const currentFilterType = this._filterModel.getFilter();
+    const oldWaypoints = this._waypointsModel.getWaypoints();
+    const waypoints = this._waypointsModel.getWaypoints().slice();
 
-    console.log(filter[filterType](waypoints));
-    switch (this._currentSortingType) {
-      case SortingType.TIME:
-        return waypoints.sort(sortWaypointByTime);
-      case SortingType.PRICE:
-        return waypoints.sort(sortWaypointByPrice);
+    if (this._currentSortingType === SortingType.DEFAULT) {
+      switch (currentFilterType) {
+        case FilterType.EVERYTHING:
+          return oldWaypoints;
+        case FilterType.FUTURE:
+          return filter[currentFilterType](waypoints);
+        case FilterType.PAST:
+          return filter[currentFilterType](waypoints);
+      }
+    } else {
+      this._filterModel.resetFilter();
+      switch (this._currentSortingType) {
+        case SortingType.DEFAULT:
+          return oldWaypoints;
+        case SortingType.TIME:
+          return waypoints.sort(sortWaypointByTime);
+        case SortingType.PRICE:
+          return waypoints.sort(sortWaypointByPrice);
+      }
     }
 
     return waypoints;
@@ -98,7 +121,7 @@ class TripPresenter {
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
-        this._clearTrip({resetRenderedWaypointCount: true, resetSortingType: true});
+        this._clearTrip({resetSortingType: true});
         this._renderTrip();
         break;
     }
@@ -143,10 +166,8 @@ class TripPresenter {
     replace(this._listComponent, this._emptyListComponent);
   }
 
-  _clearTrip({resetRenderedWaypointCount = false, resetSortingType = false} = {}) {
-    console.log(this._getWaypoints());
-    const waypointCount = this._getWaypoints().length;
-
+  _clearTrip({resetSortingType = false} = {}) {
+    this._waypointNewPresenter.destroy();
     Object
       .values(this._waypointPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -157,15 +178,6 @@ class TripPresenter {
     remove(this._emptyListComponent);
     remove(this._infoComponent);
     remove(this._priceComponent);
-
-    if (resetRenderedWaypointCount) {
-      this._renderedWaypointCount = WAYPOINT_OBJECTS_COUNT;
-    } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества задач (например, удаление или перенос в архив)
-      // нужно скорректировать число показанных задач
-      this._renderedWaypointCount = Math.min(waypointCount, this._renderedWaypointCount);
-    }
 
     if (resetSortingType) {
       this._currentSortingType = SortingType.DEFAULT;

@@ -1,6 +1,6 @@
 import {FiltersView} from '../view/filters-view.js';
 import {render, RenderPosition} from '../utils/render.js';
-import {FilterType, UpdateType} from '../constants.js';
+import {UpdateType} from '../constants.js';
 
 class FilterPresenter {
   constructor(filterContainer, filterModel, waypointsModel) {
@@ -18,9 +18,11 @@ class FilterPresenter {
   }
 
   init() {
-    const filters = this._getFilters();
+    if (this._filterComponent !== null) {
+      return;
+    }
 
-    this._filterComponent = new FiltersView(filters, this._filterModel.getFilter());
+    this._filterComponent = new FiltersView(this._filterModel.getFilter());
     this._filterComponent.setFilterTypeChangeHandler(this._filterTypeChangeHandler);
 
     render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
@@ -36,23 +38,6 @@ class FilterPresenter {
     }
 
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
-  }
-
-  _getFilters() {
-    return [
-      {
-        type: FilterType.EVERYTHING,
-        name: 'Everything',
-      },
-      {
-        type: FilterType.FUTURE,
-        name: 'Future',
-      },
-      {
-        type: FilterType.PAST,
-        name: 'Past',
-      },
-    ];
   }
 }
 

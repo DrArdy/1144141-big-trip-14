@@ -1,9 +1,8 @@
-import he from 'he';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import {WAYPOINT_TYPES, BLANK_WAYPOINT, WAYPOINT_DESTINATIONS} from '../constants.js';
+import {WAYPOINT_TYPES, BLANK_WAYPOINT, WAYPOINT_DESTINATIONS, REG_EXP_CITY} from '../constants.js';
 import {checkOffersExistance} from '../utils/waypoint.js';
 import {SmartView} from './smart-view.js';
 import {offersMap} from '../mock/waypoint-data.js';
@@ -87,7 +86,7 @@ const createWaypointFormTemplate = (waypointData) => {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city !== '' ? he.encode(city) : ''}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" pattern="${REG_EXP_CITY}" name="event-destination" value="${city !== '' ? city : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${renderCities()}
       </datalist>
@@ -106,7 +105,7 @@ const createWaypointFormTemplate = (waypointData) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice !== '' ? basePrice : ''}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice !== '' ? basePrice : ''}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

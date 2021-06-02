@@ -97,8 +97,6 @@ class WaypointPresenter {
   }
 
   _formSubmitHandler(update) {
-    // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
-    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
     const isMinorUpdate =
       checkFutureWaypoint(this._waypoint.dateFrom) !== checkFutureWaypoint(update.dateFrom) ||
       checkPastWaypoint(this._waypoint.dateTo) !== checkPastWaypoint(update.dateTo);
@@ -112,7 +110,7 @@ class WaypointPresenter {
 
   _formDeleteHandler(waypoint) {
     this._changeData(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_WAYPOINT,
       UpdateType.MINOR,
       waypoint,
     );
