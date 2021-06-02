@@ -3,12 +3,12 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 dayjs.extend(isSameOrAfter);
 
-const checkFutureWaypoint = (waypointData) => {
-  dayjs(waypointData.dateFrom).isSameOrAfter(dayjs()) ? 'true' : 'false';
+const checkFutureWaypoint = (dateFrom) => {
+  dayjs(dateFrom).isSameOrAfter(dayjs()) ? true : false;
 };
 
-const checkPastWaypoint = (waypointData) => {
-  dayjs(waypointData.dateTo).isBefore(dayjs()) ? 'true' : 'false';
+const checkPastWaypoint = (dateTo) => {
+  dayjs(dateTo).isBefore(dayjs()) ? true : false;
 };
 
 const checkOffersExistance = (offers) => {

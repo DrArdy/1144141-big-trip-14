@@ -1,3 +1,4 @@
+import he from 'he';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -86,7 +87,7 @@ const createWaypointFormTemplate = (waypointData) => {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city !== '' ? city : ''}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city !== '' ? he.encode(city) : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${renderCities()}
       </datalist>
@@ -155,6 +156,18 @@ class WaypointFormView extends SmartView{
     this._setInnerHandlers();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerEnd = null;
+    } else if (this.datepickerEnd) {
+      this.datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
+  }
+
   reset(waypoint) {
     this.updateData(
       WaypointFormView.parseWaypointToWaypointData(waypoint),
@@ -213,7 +226,12 @@ class WaypointFormView extends SmartView{
   _dateFromInputHandler(evt) {
     evt.preventDefault();
 
-    flatpickr('#event-start-time-1', {
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerEnd = null;
+    }
+
+    this._datepickerStart = flatpickr('#event-start-time-1', {
       enableTime: true,
       time_24hr: true,
       dateFormat: 'd/m/y H:i',
@@ -229,7 +247,12 @@ class WaypointFormView extends SmartView{
   _dateToInputHandler(evt) {
     evt.preventDefault();
 
-    flatpickr('#event-end-time-1', {
+    if (this.datepickerEnd) {
+      this.datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
+
+    this._datepickerEnd = flatpickr('#event-end-time-1', {
       enableTime: true,
       time_24hr: true,
       dateFormat: 'd/m/y H:i',
@@ -277,7 +300,7 @@ class WaypointFormView extends SmartView{
 
   _formDeleteHandler(evt) {
     evt.preventDefault();
-    this._callback.formDelete();
+    this._callback.formDelete(WaypointFormView.parseWaypointToWaypointData(this._waypointData));
   }
 
   setFormSubmitHandler(callback) {

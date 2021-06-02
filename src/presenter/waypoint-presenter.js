@@ -1,6 +1,8 @@
 import {WaypointFormView} from '../view/waypoint-form-view.js';
 import {WaypointView} from '../view/waypoint-view.js';
 import {replace, render, RenderPosition, remove} from '../utils/render.js';
+import {checkFutureWaypoint, checkPastWaypoint} from '../utils/waypoint.js';
+import {UserAction, UpdateType} from '../constants.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -94,14 +96,26 @@ class WaypointPresenter {
     document.addEventListener('keydown', this._escKeydownHandler);
   }
 
-  _formSubmitHandler(waypoint) {
-    this._changeData(waypoint);
+  _formSubmitHandler(update) {
+    // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
+    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+    const isMinorUpdate =
+      checkFutureWaypoint(this._waypoint.dateFrom) !== checkFutureWaypoint(update.dateFrom) ||
+      checkPastWaypoint(this._waypoint.dateTo) !== checkPastWaypoint(update.dateTo);
+    this._changeData(UserAction.UPDATE_WAYPOINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this._replaceFormToWaypoint();
     document.removeEventListener('keydown', this._escKeydownHandler);
   }
 
-  _formDeleteHandler() {
-    this._replaceFormToWaypoint();
+  _formDeleteHandler(waypoint) {
+    this._changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      waypoint,
+    );
     document.removeEventListener('keydown', this._escKeydownHandler);
   }
 
@@ -117,6 +131,8 @@ class WaypointPresenter {
     favouriteButton.classList.toggle('event__favorite-btn--active');
 
     this._changeData(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._waypoint,
